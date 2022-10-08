@@ -8,7 +8,7 @@ from glob import glob
 from PIL import Image
 from itertools import permutations
 from keras.models import load_model
-from tensorflow.keras.utils import load_img, img_to_array
+from keras.utils import load_img, img_to_array
 
 # Import helper functions from utils.py
 import utils
