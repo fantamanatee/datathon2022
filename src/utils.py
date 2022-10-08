@@ -1,3 +1,4 @@
+from cProfile import label
 import numpy as np
 import copy
 import numpy as np
@@ -7,6 +8,7 @@ import matplotlib.pyplot as plt
 from itertools import permutations
 import os
 import shutil
+import csv
 
 
 #### starter code
@@ -148,4 +150,28 @@ def split_data(base_path):
                 # print(data[i])
                 shutil.copy(src = f"{base_path}/{c}/{data[i]}", dst = f"{valid_path}/{c}_{data[i]}")
 
-split_data(base_path = 'C:\\Users\\suaar\\OneDrive\\Documents\\datathon2022\\all_data')
+#split_data(base_path = 'C:\\Users\\sophi\\OneDrive\\Desktop\\TAMU\\TAMU Datathon\\2022 Datathon\\Datathon.env\\datathon2022\\all_data')
+# Desktop\TAMU\TAMU Datathon\2022 Datathon\Datathon.env\datathon2022
+
+def data_to_csv(base_path, csv_train_name, csv_valid_name):
+    train_path = base_path + '/train'
+    valid_path = base_path + '/valid'
+
+    train_full_names = os.listdir(train_path)
+    valid_full_names = os.listdir(valid_path)
+
+    train_solutions = [(i.split("_")[0]) for i in train_full_names]
+    valid_solutions = [(i.split("_")[0]) for i in valid_full_names]
+
+    train_names = [(i.split("_")[1]) for i in train_full_names]
+    valid_names = [(i.split("_")[1]) for i in valid_full_names]
+
+    train_df = pd.DataFrame({"Image ID" : train_names, "Label" : train_solutions})
+    valid_df = pd.DataFrame({"Image ID" : valid_names, "Label" : valid_solutions})
+
+    train_df.to_csv(csv_train_name + '.csv')
+    valid_df.to_csv(csv_valid_name + '.csv')
+
+
+
+data_to_csv('C:\\Users\\sophi\\OneDrive\\Desktop\\TAMU\\TAMU Datathon\\2022 Datathon\\Datathon.env\\datathon2022\\all_data', 'train', 'valid')

@@ -74,10 +74,14 @@ if __name__ == '__main__':
         predictor = Predictor()
         prediction = predictor.make_prediction(img_name)
         # Example images are all shuffled in the "3120" order
+        print('Hi! 0\n')
         print(prediction)
 
         # Visualize the image
+        print('Hi! 1\n')
         pieces = utils.get_uniform_rectangular_split(np.asarray(example_image), 2, 2)
+        print('Hi! 2\n')
         # Example images are all shuffled in the "3120" order
         final_image = Image.fromarray(np.vstack((np.hstack((pieces[3],pieces[1])),np.hstack((pieces[2],pieces[0])))))
         final_image.show()
+        print('Hi! 3\n')
