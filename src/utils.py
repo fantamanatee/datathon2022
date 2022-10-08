@@ -160,18 +160,36 @@ def data_to_csv(base_path, csv_train_name, csv_valid_name):
     train_full_names = os.listdir(train_path)
     valid_full_names = os.listdir(valid_path)
 
-    train_solutions = [(i.split("_")[0]) for i in train_full_names]
-    valid_solutions = [(i.split("_")[0]) for i in valid_full_names]
+    # train_solutions = [(i.split("_")[0]) for i in train_full_names]
+    # valid_solutions = [(i.split("_")[0]) for i in valid_full_names]
+    # for label in train_solutions:
+    #     new_label = ""
+    #     for c in label[:-1]:
+    #         new_label += c + ' '
+    #     new_label += label[-1]
+    #     label = new_label
 
-    train_names = [(i.split("_")[1]) for i in train_full_names]
-    valid_names = [(i.split("_")[1]) for i in valid_full_names]
+    train_solutions = []
+    valid_solutions = []
+    for i in range(len(train_full_names)):
+        label = train_full_names[i][0] + ' ' + train_full_names[i][1] + ' ' + train_full_names[i][2] + ' ' + train_full_names[i][3]
+        train_solutions.append(label)
+    for i in range(len(valid_full_names)):
+        label = valid_full_names[i][0] + ' ' + valid_full_names[i][1] + ' ' + valid_full_names[i][2] + ' ' + valid_full_names[i][3]
+        valid_solutions.append(label)
+            
+    
+    print(train_solutions)
 
-    train_df = pd.DataFrame({"Image ID" : train_names, "Label" : train_solutions})
-    valid_df = pd.DataFrame({"Image ID" : valid_names, "Label" : valid_solutions})
+    # train_names = [(i.split("_")[1]) for i in train_full_names]
+    # valid_names = [(i.split("_")[1]) for i in valid_full_names]
+
+    train_df = pd.DataFrame({"image" : train_full_names, "label" : train_solutions})
+    valid_df = pd.DataFrame({"image" : valid_full_names, "label" : valid_solutions})
 
     train_df.to_csv(csv_train_name + '.csv')
     valid_df.to_csv(csv_valid_name + '.csv')
 
 
 
-data_to_csv('C:\\Users\\sophi\\OneDrive\\Desktop\\TAMU\\TAMU Datathon\\2022 Datathon\\Datathon.env\\datathon2022\\all_data', 'train', 'valid')
+data_to_csv('C:\\Users\\suaar\\OneDrive\\Documents\\datathon2022\\all_data', 'train', 'valid')
