@@ -85,7 +85,7 @@ def rearrange(im, label, cuts=2, dim=128, channel=3):
     plt.show()
 
 
-def extract_piece(a, size=200, cuts=2):
+def extract_piece(a, size=128, cuts=2):
 
     """
        extracts each piece of the puzzle and returns
@@ -98,18 +98,19 @@ def extract_piece(a, size=200, cuts=2):
         a = np.concatenate(
             (a[:, 0:cut_len, :, :], a[:, cut_len:cut_len * 2, :, :], a[:, cut_len * 2:cut_len * 3, :, :]))
     if cuts == 2:
-        a = np.array([a[:, 0:cut_len, :], a[:, cut_len:, :]])
+        a = np.array([a[:, 0:cut_len, :], a[:, cut_len:, :]], dtype=object)
         a = np.concatenate((a[:, 0:cut_len, :, :], a[:, cut_len:, :, :]))
 
     return a
 
-
-def load_data(base_path, path, cuts=2):
+# base_path: ./../
+# path_to_data: ./../train.csv
+# path_to_image: ./../path/image_name 
+def load_data(base_path, path):
 
     """
         loads and returns data
     """
-
     data = pd.read_csv(base_path + '{}.csv'.format(path))
     path = base_path + path + '/'
 
@@ -117,15 +118,16 @@ def load_data(base_path, path, cuts=2):
     y = []
     total = len(data)
     for i in range(total):
-
+        if (i%1000 == 0):
+            print(f"entry {i}")
         im = Image.open(path + data.iloc[i]['image'])
         im = np.array(im).astype('float16')
         im = im / 255 - 0.5
 
-        if path.split('/')[-2] == 'test':
+        if path.split('/')[-2] == 'test': # ???????
             x.append(im)
         else:
-            x.append(extract_piece(im))
+            x.append(extract_piece(im, size=128))
 
         label = data.iloc[i]['label']
         label = [int(i) for i in label.split()]
@@ -191,5 +193,6 @@ def data_to_csv(base_path, csv_train_name, csv_valid_name):
     valid_df.to_csv(csv_valid_name + '.csv')
 
 
-
-data_to_csv('C:\\Users\\suaar\\OneDrive\\Documents\\datathon2022\\all_data', 'train', 'valid')
+def foo():
+    print(1)
+# data_to_csv('C:\\Users\\suaar\\OneDrive\\Documents\\datathon2022\\all_data', 'train', 'valid')
