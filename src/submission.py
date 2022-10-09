@@ -12,6 +12,7 @@ from keras.utils import load_img, img_to_array
 
 # Import helper functions from utils.py
 import utils
+from utils import extract_piece
 
 class Predictor:
     """
@@ -24,7 +25,7 @@ class Predictor:
         """
         Initializes any variables to be used when making predictions
         """
-        self.model = load_model('example_model.h5')
+        self.model = load_model('model1.h5')
 
     def make_prediction(self, img_path):
         """
@@ -45,11 +46,15 @@ class Predictor:
         # Load the image
         img = load_img(f'{img_path}', target_size=(128, 128))
 
+
         # Converts the image to a 3D numpy array (128x128x3)
         img_array = img_to_array(img)
 
+        img_grid = extract_piece(img_array, size=128, cuts=2)
+
         # Convert from (128x128x3) to (Nonex128x128x3), for tensorflow
-        img_tensor = np.expand_dims(img_array, axis=0)
+        img_tensor = np.expand_dims(img_grid, axis=0)
+
 
         # Preform a prediction on this image using a pre-trained model (you should make your own model :))
         prediction = self.model.predict(img_tensor, verbose=False)
@@ -74,14 +79,10 @@ if __name__ == '__main__':
         predictor = Predictor()
         prediction = predictor.make_prediction(img_name)
         # Example images are all shuffled in the "3120" order
-        print('Hi! 0\n')
         print(prediction)
 
         # Visualize the image
-        print('Hi! 1\n')
         pieces = utils.get_uniform_rectangular_split(np.asarray(example_image), 2, 2)
-        print('Hi! 2\n')
         # Example images are all shuffled in the "3120" order
         final_image = Image.fromarray(np.vstack((np.hstack((pieces[3],pieces[1])),np.hstack((pieces[2],pieces[0])))))
         final_image.show()
-        print('Hi! 3\n')

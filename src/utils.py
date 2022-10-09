@@ -8,10 +8,7 @@ import matplotlib.pyplot as plt
 from itertools import permutations
 import os
 import shutil
-import csv
 
-
-#### starter code
 
 def get_pieces(img, rows, cols, row_cut_size, col_cut_size):
     pieces = []
@@ -62,7 +59,7 @@ def swap_piece(im, pos, true_pos, cuts=2, dim=200):
 def rearrange(im, label, cuts=2, dim=128, channel=3):
 
     """
-        rearranges the image according to the label
+    rearranges the image according to the label
     """
 
     cut_len = dim // cuts
@@ -88,29 +85,24 @@ def rearrange(im, label, cuts=2, dim=128, channel=3):
 def extract_piece(a, size=128, cuts=2):
 
     """
-       extracts each piece of the puzzle and returns
+    extracts each piece of the puzzle and returns
     """
 
     cut_len = size // cuts
 
-    if cuts == 3:
-        a = np.array([a[:, 0:cut_len, :], a[:, cut_len:cut_len * 2, :], a[:, cut_len * 2:cut_len * 3, :]])
-        a = np.concatenate(
-            (a[:, 0:cut_len, :, :], a[:, cut_len:cut_len * 2, :, :], a[:, cut_len * 2:cut_len * 3, :, :]))
     if cuts == 2:
-        a = np.array([a[:, 0:cut_len, :], a[:, cut_len:, :]], dtype=object)
+        a = np.array([a[:, 0:cut_len, :], a[:, cut_len:, :]])
         a = np.concatenate((a[:, 0:cut_len, :, :], a[:, cut_len:, :, :]))
 
     return a
 
-# base_path: ./../
-# path_to_data: ./../train.csv
-# path_to_image: ./../path/image_name 
-def load_data(base_path, path):
 
+def load_data(base_path, path, cuts=2):
+    print("Loading...")
     """
-        loads and returns data
+    loads and returns data
     """
+
     data = pd.read_csv(base_path + '{}.csv'.format(path))
     path = base_path + path + '/'
 
@@ -118,16 +110,15 @@ def load_data(base_path, path):
     y = []
     total = len(data)
     for i in range(total):
-        if (i%1000 == 0):
-            print(f"entry {i}")
+
         im = Image.open(path + data.iloc[i]['image'])
         im = np.array(im).astype('float16')
         im = im / 255 - 0.5
 
-        if path.split('/')[-2] == 'test': # ???????
+        if path.split('/')[-2] == 'test':
             x.append(im)
         else:
-            x.append(extract_piece(im, size=128))
+            x.append(extract_piece(im))
 
         label = data.iloc[i]['label']
         label = [int(i) for i in label.split()]
@@ -138,6 +129,9 @@ def load_data(base_path, path):
 
 
 def split_data(base_path):
+    """
+    Split the entire data set of files into training and validation classifications
+    """
     train_path = base_path + '/train'
     valid_path = base_path + '/valid'
 
@@ -146,30 +140,20 @@ def split_data(base_path):
         data = os.listdir(f"{base_path}/{c}")
         for i in range(len(data)): # iterate through each image in shuffled (os.listdir())
             if i < 1658: # for the first 80% images, add to train, named with permutation
-                # print(data[i])
                 shutil.copy(src = f"{base_path}/{c}/{data[i]}", dst = f"{train_path}/{c}_{data[i]}")
             else:        # for the last 20% images, add to valid, named with permutation 
-                # print(data[i])
                 shutil.copy(src = f"{base_path}/{c}/{data[i]}", dst = f"{valid_path}/{c}_{data[i]}")
 
-#split_data(base_path = 'C:\\Users\\sophi\\OneDrive\\Desktop\\TAMU\\TAMU Datathon\\2022 Datathon\\Datathon.env\\datathon2022\\all_data')
-# Desktop\TAMU\TAMU Datathon\2022 Datathon\Datathon.env\datathon2022
 
 def data_to_csv(base_path, csv_train_name, csv_valid_name):
+    """
+    base_path used to get all csv files in the the training and validation paths
+    """
     train_path = base_path + '/train'
     valid_path = base_path + '/valid'
 
     train_full_names = os.listdir(train_path)
     valid_full_names = os.listdir(valid_path)
-
-    # train_solutions = [(i.split("_")[0]) for i in train_full_names]
-    # valid_solutions = [(i.split("_")[0]) for i in valid_full_names]
-    # for label in train_solutions:
-    #     new_label = ""
-    #     for c in label[:-1]:
-    #         new_label += c + ' '
-    #     new_label += label[-1]
-    #     label = new_label
 
     train_solutions = []
     valid_solutions = []
@@ -183,16 +167,8 @@ def data_to_csv(base_path, csv_train_name, csv_valid_name):
     
     print(train_solutions)
 
-    # train_names = [(i.split("_")[1]) for i in train_full_names]
-    # valid_names = [(i.split("_")[1]) for i in valid_full_names]
-
     train_df = pd.DataFrame({"image" : train_full_names, "label" : train_solutions})
     valid_df = pd.DataFrame({"image" : valid_full_names, "label" : valid_solutions})
 
     train_df.to_csv(csv_train_name + '.csv')
     valid_df.to_csv(csv_valid_name + '.csv')
-
-
-def foo():
-    print(1)
-# data_to_csv('C:\\Users\\suaar\\OneDrive\\Documents\\datathon2022\\all_data', 'train', 'valid')
